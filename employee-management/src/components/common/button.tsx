@@ -3,6 +3,7 @@ interface IButtonProps {
   label: string;
   type: ButtonType;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
 type ButtonType = 'button' | 'submit' | 'reset';
@@ -17,12 +18,13 @@ const colorClasses: Record<ButtonColor, string> = {
 
 const Button = (props : IButtonProps) =>{
 
-const { color, label, type, onClick } = props;
+const { color, label, type, disabled, onClick } = props;
 
  return (
     <button 
       type={type} 
       onClick={onClick} 
+      disabled={disabled ?? false}
       className={`${colorClasses[color]} text-white px-4 py-2 rounded cursor-pointer`}>
       {label}
     </button>

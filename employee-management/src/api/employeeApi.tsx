@@ -1,10 +1,12 @@
 import type { EmployeeRequest, EmployeeResponse } from "../types/employee";
 import axios from "axios";
+import type { PaginatedResponse } from "../types/paginatedResult";
 
 const API_URL = "http://localhost:5145/Employees";
 
-export const getEmployees = async (): Promise<EmployeeResponse[]> => {
-  const response = await axios.get(API_URL);
+export const getPaginatedResult = async (limit: number, skip: number): Promise<PaginatedResponse<EmployeeResponse>> => {
+  const params = { limit: limit.toString(), skip: skip.toString() };
+  const response = await axios.get(`${API_URL}/GetPaginatedEmployees`, { params });
   return response.data;
 };
 

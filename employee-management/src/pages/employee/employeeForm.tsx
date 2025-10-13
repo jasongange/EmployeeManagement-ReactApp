@@ -19,7 +19,7 @@ const EmployeeForm = () => {
     lastName: '',
     employeeNumber: '',
     salary: 0,
-    departmentId: '1'
+    departmentId: 'D001'
   });
 
   const loadDepartments = async () => {
