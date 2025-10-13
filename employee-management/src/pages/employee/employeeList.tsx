@@ -2,16 +2,22 @@ import { useNavigate } from "react-router-dom";
 import type { EmployeeResponse } from "../../types/employee";
 import Button from "../../components/common/button";
 import { useEffect, useState } from "react";
-import { deleteEmployee, getEmployees } from "../../api/employeeApi";
+import { deleteEmployee, getPaginatedResult } from "../../api/employeeApi";
 import Table, { type Column } from "../../components/common/table";
 
 const EmployeeList = () =>{
   const navigate = useNavigate();
+
   const [employees, setEmployees] = useState<EmployeeResponse[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+
+  const [skip, setSkip] = useState(0);
+  const limit = 5;
 
   const loadEmployees = async () => {
-    const data = await getEmployees();
-    setEmployees(data);
+    const data = await getPaginatedResult(limit, skip);
+    setEmployees(data.items);
+    setTotalCount(data.totalCount)
   };
 
   const handleEdit = (id: string) => {
@@ -31,7 +37,7 @@ const EmployeeList = () =>{
 
   useEffect(() => {
     loadEmployees();
-  }, []);
+  }, [skip]);
 
   const columns: Column<EmployeeResponse>[] = [
     { header: 'Employee Number', accessor: 'employeeNumber' },
@@ -57,7 +63,15 @@ const EmployeeList = () =>{
         <h1 className="text-2xl font-bold">Employee List</h1>
         <Button color="green" label="Add" type="button" onClick={handleAdd}/>
       </div>
-      <Table columns={columns} data={employees} keyExtractor={(employee) => employee.id} />
+      <Table 
+        columns={columns} 
+        data={employees} 
+        keyExtractor={(employee) => employee.id} 
+        skip={skip}
+        limit={limit}
+        totalCount={totalCount}
+        onPageChange={(newSkip) => setSkip(newSkip)}
+        />
     </div>
   );
 };
