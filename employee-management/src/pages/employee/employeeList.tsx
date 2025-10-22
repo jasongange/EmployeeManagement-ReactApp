@@ -1,24 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import type { EmployeeResponse } from "../../types/employee";
 import Button from "../../components/common/button";
-import { useEffect, useState } from "react";
-import { deleteEmployee, getPaginatedResult } from "../../api/employeeApi";
+import { useState } from "react";
 import Table, { type Column } from "../../components/common/table";
+import { useDeleteEmployee, useGetPaginatedResult } from "../../api/employees/hook";
 
 const EmployeeList = () =>{
   const navigate = useNavigate();
 
-  const [employees, setEmployees] = useState<EmployeeResponse[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
-
   const [skip, setSkip] = useState(0);
   const limit = 5;
 
-  const loadEmployees = async () => {
-    const data = await getPaginatedResult(limit, skip);
-    setEmployees(data.items);
-    setTotalCount(data.totalCount)
-  };
+  const { data: employees } = useGetPaginatedResult(limit, skip);
+  const { mutate: deleteMutate  } = useDeleteEmployee();
 
   const handleEdit = (id: string) => {
     navigate(`/edit/${id}`);
@@ -26,18 +20,13 @@ const EmployeeList = () =>{
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
-    await deleteEmployee(id);
-    loadEmployees();
+    deleteMutate(id);
     }
   };
 
   const handleAdd = () => {
     navigate('/create');
   };
-
-  useEffect(() => {
-    loadEmployees();
-  }, [skip]);
 
   const columns: Column<EmployeeResponse>[] = [
     { header: 'Employee Number', accessor: 'employeeNumber' },
@@ -65,11 +54,11 @@ const EmployeeList = () =>{
       </div>
       <Table 
         columns={columns} 
-        data={employees} 
+        data={employees?.items ?? []} 
         keyExtractor={(employee) => employee.id} 
         skip={skip}
         limit={limit}
-        totalCount={totalCount}
+        totalCount={employees?.totalCount ?? 0}
         onPageChange={(newSkip) => setSkip(newSkip)}
         />
     </div>

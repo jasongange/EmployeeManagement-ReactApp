@@ -1,24 +1,14 @@
 import type { Department } from "../../types/department";
-import { useEffect, useState } from "react";
-import { getPaginatedResult } from "../../api/departmentApi";
+import { useState } from "react";
+import { useGetPaginatedResult } from "../../api/departments/hook";
 import Table, { type Column } from "../../components/common/table";
 
 const DepartmentList = () =>{
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
 
   const [skip, setSkip] = useState(0);
   const limit = 3;
 
-  const loadDepartments = async () => {
-    const data = await getPaginatedResult(limit, skip);
-    setDepartments(data.items);
-    setTotalCount(data.totalCount)
-  };
-
-  useEffect(() => {
-    loadDepartments();
-  }, [skip]);
+  const { data } = useGetPaginatedResult(limit, skip);
 
   const columns: Column<Department>[] = [
     { header: 'Name', accessor: 'name' }
@@ -31,11 +21,11 @@ const DepartmentList = () =>{
        </div>
        <Table 
         columns={columns} 
-        data={departments} 
+        data={data?.items ?? []} 
         keyExtractor={(department) => department.id} 
         skip={skip}
         limit={limit}
-        totalCount={totalCount}
+        totalCount={data?.totalCount ?? 0}
         onPageChange={(newSkip) => setSkip(newSkip)}
         />
     </div>
