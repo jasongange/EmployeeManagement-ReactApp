@@ -1,6 +1,6 @@
-import type { Department } from "../types/department";
+import type { Department } from "../../types/department";
 import axios from "axios";
-import type { PaginatedResponse } from "../types/paginatedResult";
+import type { PaginatedResponse } from "../../types/paginatedResult";
 
 const API_URL = "http://localhost:5145/Departments";
 
